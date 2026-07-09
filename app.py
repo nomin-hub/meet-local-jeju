@@ -27,10 +27,12 @@ from rag.recommender import TravelerPreferences, get_experience_recommendations
 from utils.experience_loader import ExperienceCardError, load_experience_cards
 from utils.ui_helpers import (
     inject_mobile_css,
+    render_assistant_intro,
     render_experience_grid,
     render_home_screen,
     render_honesty_badges,
     render_my_page_header,
+    render_preference_intro,
     render_screen_title,
     render_sources,
 )
@@ -129,8 +131,9 @@ if screen == SCREEN_HOME:
 # AI Assistant screen
 # ---------------------------------------------------------------------------
 elif screen == SCREEN_ASSISTANT:
-    render_screen_title("AI Assistant", "Ask for local recommendations grounded in JEJU-KB.")
-    render_honesty_badges(["Grounded in JEJU-KB", "No booking or payment"])
+    render_screen_title("AI Assistant", "Friendly local concierge grounded in JEJU-KB.")
+    render_assistant_intro()
+    render_honesty_badges(["Grounded in JEJU-KB", "Sources shown", "No booking or payment"])
 
     if not VECTOR_STORE_DIR.exists():
         st.warning(
@@ -148,7 +151,7 @@ elif screen == SCREEN_ASSISTANT:
     )
 
     if assistant_mode == ASSISTANT_MODE_ASK:
-        with st.expander("Try an example"):
+        with st.expander("Try a grounded demo prompt"):
             for question in EXAMPLE_QUESTIONS:
                 if st.button(question, use_container_width=True, key=f"example::{question}"):
                     st.session_state["pending_question"] = question
@@ -162,10 +165,18 @@ elif screen == SCREEN_ASSISTANT:
                 st.markdown(message["content"])
                 render_sources(message.get("sources"))
 
-        # --- Question input: chat box or a clicked example ---
-        question = st.chat_input("Ask about local life, culture, food, or festivals in Jeju...")
-        if not question and "pending_question" in st.session_state:
-            question = st.session_state.pop("pending_question")
+        # --- Question input: compact mobile form or a clicked example ---
+        question = st.session_state.pop("pending_question", None)
+        if question is None:
+            with st.form("ask_question_form", clear_on_submit=True):
+                typed_question = st.text_input(
+                    "Ask JEJU-KB",
+                    placeholder="Tell me what kind of Jeju experience you want...",
+                    label_visibility="collapsed",
+                )
+                submitted_question = st.form_submit_button("Ask JEJU-KB", use_container_width=True)
+            if submitted_question:
+                question = typed_question
 
         if question is not None:
             question = question.strip()
@@ -196,12 +207,8 @@ elif screen == SCREEN_ASSISTANT:
                 )
 
     else:  # ASSISTANT_MODE_RECOMMEND
-        st.markdown("**Your Travel Preference Card**")
-        st.caption(
-            "Share your interests and travel style, and we'll recommend "
-            "authentic local experiences grounded in JEJU-KB."
-        )
-        st.info("💡 This is a prototype recommendation feature, not a booking system.")
+        render_preference_intro()
+        st.info("This is a prototype recommendation feature, not a booking system.")
 
         if "last_recommendation" not in st.session_state:
             st.session_state["last_recommendation"] = None
