@@ -1,0 +1,17 @@
+{
+  "id": "EXP-CARD-0003",
+  "title": "Tangerine Harvest",
+  "category": "Seasonal Living / Farming",
+  "area": "Seogwipo-si",
+  "season": "Winter (peak harvest season)",
+  "duration": "Prototype estimate only",
+  "emoji": "🍊",
+  "best_for": ["families", "slow travel", "seasonal visitors"],
+  "transportation": ["public transportation", "taxi"],
+  "description": "Pick tangerines (gamgyul) alongside a farming family during peak harvest season, on a real working orchard.",
+  "local_story": "Citrus farming has shaped Jeju's rural economy since the mid-20th century, and the winter harvest remains the most demanding and important stretch of many farming families' year.",
+  "related_kb_ids": ["EXP-0001", "STORY-0002", "SEASON-0001"],
+  "status": "prototype_only",
+  "booking_status": "booking_not_available_in_mvp",
+  "source_note": "This is MVP experience-card data connected to JEJU-KB. It is not a real commercial product listing."
+}

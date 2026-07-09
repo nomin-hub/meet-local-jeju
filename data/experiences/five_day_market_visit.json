@@ -1,0 +1,17 @@
+{
+  "id": "EXP-CARD-0002",
+  "title": "Five-Day Market Visit",
+  "category": "Local Life / Food",
+  "area": "Jeju-si (island-wide rotating schedule)",
+  "season": "Year-round",
+  "duration": "Prototype estimate only",
+  "emoji": "🥬",
+  "best_for": ["local food lovers", "solo travelers", "long-stay travelers"],
+  "transportation": ["public transportation", "walking"],
+  "description": "Wander a rotating traditional market (owe-il-jang) and meet the vendors who grow, catch, and cook what they sell.",
+  "local_story": "Jeju's five-day markets predate modern retail and still structure how many residents shop for produce and seafood — a direct window into everyday local life.",
+  "related_kb_ids": ["EXP-0003", "FOOD-0001", "LOCAL-0001"],
+  "status": "prototype_only",
+  "booking_status": "booking_not_available_in_mvp",
+  "source_note": "This is MVP experience-card data connected to JEJU-KB. It is not a real commercial product listing."
+}

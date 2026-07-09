@@ -1,0 +1,17 @@
+{
+  "id": "EXP-CARD-0005",
+  "title": "Bingtteok Local Food",
+  "category": "Food / Culture",
+  "area": "Island-wide",
+  "season": "Year-round",
+  "duration": "Prototype estimate only",
+  "emoji": "🥟",
+  "best_for": ["food lovers", "solo travelers", "budget-friendly travelers"],
+  "transportation": ["public transportation", "walking"],
+  "description": "Try Jeju's traditional buckwheat rice cake, rolled around seasoned radish — a taste shaped directly by the island's volcanic soil.",
+  "local_story": "Jeju's basalt soil couldn't easily support paddy rice, which historically pushed islanders toward buckwheat staples like bingtteok — a dish that's edible local geography.",
+  "related_kb_ids": ["FOOD-0001", "LOCAL-0001", "EXP-0003"],
+  "status": "prototype_only",
+  "booking_status": "booking_not_available_in_mvp",
+  "source_note": "This is MVP experience-card data connected to JEJU-KB. It is not a real commercial product listing."
+}

@@ -96,9 +96,10 @@ A general-purpose LLM asked "what's an authentic thing to do in Jeju in October?
 
 ## Key Features
 
-- **Pinterest-style "Featured Local Ideas" board** — six browsable local experience cards (category chip, description, "Save idea - prototype only" badge) as a visual entry point before a traveler even asks a question. See [Design Direction](#design-direction).
-- **Two modes, one sidebar toggle** — conversational Q&A ("Ask Local Jeju AI") and preference-based recommendations ("Get Experience Recommendations"), both grounded in the same JEJU-KB.
-- **Conversational chat UI** (Streamlit) with persistent session history.
+- **Mobile app-style prototype UI** — a Streamlit-based phone frame with bottom tab navigation (Home / AI Assistant / My Page) instead of a desktop sidebar. See [Design Direction](#design-direction).
+- **Pinterest-style Home screen** — six browsable, image-first local experience cards (gradient placeholder, category chip, description, "Save idea - prototype only" badge) in a 2-column grid, as a visual entry point before a traveler even asks a question.
+- **Two functional modes inside AI Assistant** — conversational Q&A ("Ask a question") and preference-based recommendations ("Get recommendations"), both grounded in the same JEJU-KB.
+- **Conversational chat UI** (Streamlit) with persistent session history and chat-bubble styling.
 - **Retrieval-grounded answers** — every response is generated from retrieved JEJU-KB chunks, never from unaided model memory.
 - **Source attribution** — each answer is paired with the exact source documents (title, category, chunk ID, file path) that grounded it.
 - **Structured knowledge base (JEJU-KB)** — Markdown + YAML front matter documents organized into 10 topical categories with a formal schema (see [Knowledge Document Standard](#knowledge-document-standard-kds)).
@@ -123,15 +124,25 @@ Alongside chat, the sidebar has a **"Get Experience Recommendations"** mode — 
 
 ## Design Direction
 
-The UI direction is **Pinterest-inspired local discovery**, layered on top of the same two functional modes above — not a redesign of what the app does, but of how it invites a traveler in before they've typed anything.
+**The current UI is a Streamlit-based mobile app prototype, inspired by Pinterest-style local discovery — not a redesign of what the app does, but of how it looks and how a traveler moves through it.** The whole app is styled to feel like a phone screen (a centered ~430px-wide card with rounded corners and a soft shadow) rather than a desktop dashboard, with bottom tab navigation instead of a sidebar.
 
-Concretely, that means:
+Three screens, switched via a bottom tab bar (Home / AI Assistant / My Page), all inside that phone frame:
 
-- **Pinterest-style discovery board** — the "Featured Local Ideas" section on the home screen: six browsable cards, no search box required, meant for skimming before committing to a question or a form.
-- **Airbnb-style experience cards** — each idea card carries a category chip, a short description, and a "Save idea - prototype only" badge, echoing the visual grammar of an experience listing without implementing any of the backend behind one.
-- **AI travel concierge** — chat mode and recommendation mode remain the functional core; the discovery board is a warmer front door to them, not a replacement.
+- **Home** — a Pinterest-style, image-first, 2-column card grid of local experience ideas (gradient placeholder "image" blocks with an emoji, since no real image pipeline exists yet), loaded from the [experience card dataset](#local-experience-card-dataset).
+- **AI Assistant** — the two functional RAG modes from before, now inside a chat-bubble-styled screen with a toggle between "Ask a question" and "Get recommendations." This is still the functional core of the app.
+- **My Page** — a mock "saved ideas" screen (avatar, Pins/Boards/Trips tabs) demonstrating where a future logged-in experience would live. Explicitly non-functional: no login, no real saving.
 
-**This is still a Streamlit portfolio MVP, not a production mobile app.** The card grid, chips, and "save" badges are static, developer-authored content styled with custom CSS inside Streamlit — there is no image pipeline, no persistence layer behind "Save idea," and no native app. See [What This MVP Does Not Do Yet](#current-limitations) for the full list of what's intentionally not implemented.
+**This is still a Streamlit portfolio MVP, not a production native mobile app.** The "phone frame," cards, chat bubbles, and bottom tab bar are all achieved with custom CSS constraining Streamlit's own layout (see `utils/ui_helpers.py`) — there is no image pipeline, no persistence layer behind "Save idea," no login, and no native app shell. See [What This MVP Does Not Do Yet](#current-limitations) for the full list of what's intentionally not implemented.
+
+## Local Experience Card Dataset
+
+The "Featured Local Ideas" cards shown on the Home screen (and reused as mock "Pins" on My Page) are not hardcoded inside the UI — they're loaded from a structured dataset at [`data/experiences/`](data/experiences/), one JSON file per card, via [`utils/experience_loader.py`](utils/experience_loader.py). This separates *experience card data* from *UI rendering*, the same way JEJU-KB separates knowledge content from the RAG pipeline that reads it.
+
+- **They are prototype cards, not real commercial listings.** Every card carries `"status": "prototype_only"` and `"booking_status": "booking_not_available_in_mvp"`, and a `source_note` stating explicitly that it is not a real commercial product listing. No real host names, exact addresses, phone numbers, prices, or schedules are included — `duration` is deliberately labeled `"Prototype estimate only"`.
+- **They will support future Explore Page, Trip Planner, and mock marketplace features.** Structuring this as data now — rather than leaving it as inline UI strings — is what would let a future Explore Page filter/sort cards, or a future Trip Planner sequence them, without a UI rewrite.
+- **They are connected to JEJU-KB through `related_kb_ids`.** Each card points back to the real knowledge documents it's grounded in (e.g. the Haenyeo Culture Walk card links to `EXP-0002` and `STORY-0001`), so even this static discovery board stays traceable to JEJU-KB rather than being invented content.
+
+Run `python3 utils/experience_loader.py` to load and validate all six cards from the command line — see [How to Run Locally](#how-to-run-locally).
 
 ## Demo Questions
 
@@ -162,7 +173,7 @@ This diagram shows the query-time path a question takes through the system. `JEJ
 
 ```
 meet-local-jeju/
-├── app.py                     # Streamlit UI — chat mode + recommendation mode
+├── app.py                     # Streamlit UI — mobile app shell (Home / AI Assistant / My Page)
 │
 ├── knowledge/                  # JEJU-KB — the AI knowledge base (RAG source of truth)
 │   ├── KDS.md                    # Knowledge Document Standard
@@ -187,7 +198,9 @@ meet-local-jeju/
 │   ├── recommender.py            # Preference-based grounded recommendations (recommendation mode)
 │   └── embeddings.py             # Placeholder — not yet implemented (see Limitations)
 │
-├── data/                       # Working storage for the ingestion pipeline (raw/processed/embeddings)
+├── data/
+│   ├── experiences/               # Featured Local Ideas card dataset (6 JSON files, prototype content)
+│   └── raw/, processed/, embeddings/  # Working storage for the RAG ingestion pipeline
 ├── vector_db/chroma/            # Persisted ChromaDB collection (build artifact, gitignored)
 │
 ├── docs/                       # Product documentation
@@ -198,7 +211,8 @@ meet-local-jeju/
 │       └── 05_DEMO_SCRIPT.md       # Live demo walkthrough
 │
 ├── utils/
-│   ├── ui_helpers.py              # Streamlit rendering helpers — cards, hero, sources (no RAG logic)
+│   ├── ui_helpers.py              # Mobile phone-frame CSS + screen rendering helpers (no RAG logic)
+│   ├── experience_loader.py       # Loads + validates data/experiences/*.json
 │   └── config.py, helpers.py     # Placeholders — not yet implemented
 ├── pages/                      # Additional Streamlit pages (none yet)
 │
@@ -319,8 +333,9 @@ Step 3 embeds every JEJU-KB document and persists them to `vector_db/chroma/`. T
 - **English only.** No multi-language ingestion or querying yet.
 - **Single-turn retrieval.** Each question is answered independently; prior conversation turns are displayed in the UI but are not yet used as retrieval context for follow-up questions.
 - **Recommendation mode is a recommendation, not a plan or a marketplace.** It suggests at most 3 experiences and a possible 1-day sequencing — it does not build multi-day itineraries, does not know real-time availability, and has no host, booking, or payment layer behind it (see [Long-Term Vision](#long-term-vision) for where that would fit later).
-- **The "Featured Local Ideas" board is static, developer-authored content.** The six cards are hard-coded, not generated per-user, and "Save idea - prototype only" is a non-interactive label — nothing is actually saved anywhere.
-- **`utils/ui_helpers.py` uses custom CSS (`unsafe_allow_html=True`) for card styling.** All content rendered through it is static and developer-authored — no user input is ever passed into the HTML, so this is a styling choice, not a user-generated-content risk.
+- **The Home screen's card grid is developer-authored prototype content, not a live catalog.** The six cards are loaded from a structured JSON dataset (see [Local Experience Card Dataset](#local-experience-card-dataset)) rather than hardcoded in the UI, but they're still static, not generated per-user — and "Save idea - prototype only" is a non-interactive label, nothing is actually saved anywhere.
+- **My Page is mock UI only.** There is no login, no user accounts, and no real "saved" state — the Pins shown are just a subset of the same static experience dataset, and Boards/Trips are placeholder tabs.
+- **The "phone frame" is CSS, not a native app.** `utils/ui_helpers.py` uses custom CSS (`unsafe_allow_html=True`) to constrain Streamlit's own layout into a mobile-app look. All content rendered through it is static and developer-authored — no user input is ever passed into the HTML, so this is a styling choice, not a user-generated-content risk. Some Streamlit-rendered elements (e.g. `st.chat_input`) are fixed by Streamlit itself and sit just outside the phone-frame card, a known cosmetic limitation of building this look on top of Streamlit rather than a native framework.
 - **Full rebuild only.** `build_vector_store()` always rebuilds the entire collection from scratch — there's no incremental/partial re-ingestion yet.
 - **Some source content is illustrative.** A few narrative "story" documents are composite accounts written to demonstrate the format, explicitly flagged as such in their own `Source Notes` sections, pending real attributed sourcing.
 - **`rag/embeddings.py`, `utils/config.py`, and `utils/helpers.py` are still placeholders.** Embedding configuration currently lives directly in `rag/vectordb.py` rather than a shared config module.

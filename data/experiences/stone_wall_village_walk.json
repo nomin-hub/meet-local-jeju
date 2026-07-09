@@ -1,0 +1,17 @@
+{
+  "id": "EXP-CARD-0004",
+  "title": "Jeju Stone Wall Village",
+  "category": "Culture / Heritage",
+  "area": "Island-wide, mid-mountain (jungsangan) areas",
+  "season": "Year-round",
+  "duration": "Prototype estimate only",
+  "emoji": "🪨",
+  "best_for": ["culture lovers", "long-stay travelers", "slow travel"],
+  "transportation": ["car", "taxi"],
+  "description": "See the black basalt batdam walls that crisscross Jeju's farmland, built without mortar to let the island's coastal winds pass through.",
+  "local_story": "Jeju's traditional field system, organized around these dry-stone walls, has been recognized as a Globally Important Agricultural Heritage System for its long-standing, still-functioning land-management design.",
+  "related_kb_ids": ["CULTURE-0001", "LOCAL-0002", "STORY-0002"],
+  "status": "prototype_only",
+  "booking_status": "booking_not_available_in_mvp",
+  "source_note": "This is MVP experience-card data connected to JEJU-KB. It is not a real commercial product listing."
+}

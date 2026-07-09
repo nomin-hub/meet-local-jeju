@@ -23,35 +23,36 @@ Calibrate depth accordingly: lead with the product experience, then go as deep i
 
 Use when time is extremely tight — a recruiter screen-share, or the last minute of a longer conversation.
 
-1. **(10s)** "Meet Local Jeju is a RAG-powered MVP that helps travelers discover authentic Jeju experiences — grounded in a curated knowledge base, not generic AI chatter."
-2. **(25s)** Click a sidebar example question in Chat Mode (e.g. *"Tell me about Jeju stone walls."*) and narrate while it loads: "It retrieves from a structured knowledge base first, then answers only from what it found."
-3. **(15s)** Open the Sources expander: "Every answer is traceable back to a specific document — that's the point."
+1. **(10s)** "Meet Local Jeju is a RAG-powered MVP that helps travelers discover authentic Jeju experiences — grounded in a curated knowledge base, not generic AI chatter. It's styled as a mobile app prototype." Show the Home screen's 2-column card grid.
+2. **(25s)** Tap the **AI Assistant** tab, open "Try an example," pick a question (e.g. *"Tell me about Jeju stone walls."*), and narrate while it loads: "It retrieves from a structured knowledge base first, then answers only from what it found."
+3. **(15s)** Point at the source chips under the answer: "Every answer is traceable back to a specific document — that's the point."
 4. **(10s)** "It's an MVP — no booking, no payments, no real hosts yet. The current focus is proving the knowledge and recommendation layer works before building any of that."
 
 ## 3-Minute Demo Script
 
-Use for a standard portfolio walkthrough covering both modes.
+Use for a standard portfolio walkthrough covering all three screens.
 
-1. **(20s) Frame it.** "Most travel AI recommends the same popular spots. Meet Local Jeju is built to surface what's actually local, grounded in a curated knowledge base called JEJU-KB."
-2. **(30s) Chat Mode.** Click a sidebar example question. While it loads: "This isn't the model's memory — it retrieved relevant JEJU-KB chunks first, then answered only from that context."
-3. **(30s) Sources.** Open the Sources expander: id, title, category, chunk ID, file path. "That's what makes 'authentic' a checkable claim, not a marketing word."
-4. **(40s) Recommendation Mode.** Switch modes, pick 2-3 interests (e.g. *culture*, *local people*, *food*), submit. While it loads: "Same retriever, same grounding rules — just a structured recommendation instead of a free-form answer."
-5. **(30s) Walk the output.** Point out the structure: Summary → Recommended Local Experiences → Suggested 1-Day Flow → Sources.
-6. **(30s) Scope and vision.** "This is a recommendation feature, not a booking system — no prices, no availability, no reservations. It's Phase 1 of a longer roadmap toward a trip planner and local experience marketplace, but none of that exists yet."
+1. **(20s) Frame it.** "Most travel AI recommends the same popular spots. Meet Local Jeju is built to surface what's actually local, grounded in a curated knowledge base called JEJU-KB — and it's designed as a mobile app prototype, not a desktop dashboard."
+2. **(20s) Home screen.** Point out the phone-frame layout and the 2-column Pinterest-style card grid — image-first cards with category chips, browsable before typing anything.
+3. **(30s) AI Assistant — chat.** Tap the AI Assistant tab, ask a question. While it loads: "This isn't the model's memory — it retrieved relevant JEJU-KB chunks first, then answered only from that context."
+4. **(20s) Sources.** Point out the source chips and the fallback expander: id, title, category, chunk ID, file path. "That's what makes 'authentic' a checkable claim, not a marketing word."
+5. **(30s) AI Assistant — recommendations.** Toggle to "Get recommendations," pick 2-3 interests (e.g. *culture*, *local people*, *food*), submit. While it loads: "Same retriever, same grounding rules — just a structured recommendation instead of a free-form answer."
+6. **(15s) Walk the output.** Point out the structure: Summary → Recommended Local Experiences → Suggested 1-Day Flow → Sources.
+7. **(25s) My Page + vision.** Tap My Page: "This is mock UI — no login, nothing is actually saved. It previews where a future logged-in experience would live." Close with: "This is Phase 1 of a longer roadmap toward a trip planner and local experience marketplace, but none of that exists yet."
 
 ## Recommended Live Demo Sequence
 
-The canonical step-by-step order for a live walkthrough — this is the backbone both scripts above are built from:
+The canonical step-by-step order for a live walkthrough:
 
-1. Open the app.
-2. Explain the problem (generic travel AI vs. grounded local knowledge).
-3. Ask a haenyeo question in Chat Mode.
-4. Switch to Recommendation Mode.
-5. Select food / culture / local people as interests.
-6. Show the recommendation results and sources.
-7. Explain the long-term platform vision honestly (Phase 1 today; trip planner and marketplace are later, unbuilt phases).
+1. Show Home screen.
+2. Browse Pinterest-style local experience cards.
+3. Open AI Assistant.
+4. Ask a RAG question.
+5. Use recommendation mode.
+6. Show My Page mock saved ideas.
+7. Explain future Trip Planner / marketplace direction honestly (Phase 1 today; trip planner and marketplace are later, unbuilt phases).
 
-For exact timing and talking points behind each step, see [Recommended Demo Flow](#recommended-demo-flow) (chat mode, ~4 min) and [Recommendation Mode Demo Flow](#recommendation-mode-demo-flow) (~2 min) below — together they form the full ~6-minute version of this sequence.
+For exact timing and talking points behind each step, see [Full Demo Flow](#full-demo-flow) below — it's the ~6-minute expanded version of this sequence.
 
 ## App Setup Checklist
 
@@ -60,34 +61,26 @@ Run through this **before** presenting, not during:
 - [ ] `.env` exists locally with a valid `OPENAI_API_KEY` (never shown on screen).
 - [ ] Vector store is built: `vector_db/chroma/` exists and is current — run `python3 rag/vectordb.py` if `knowledge/` has changed since the last build.
 - [ ] `streamlit run app.py` starts cleanly with no errors in the terminal.
-- [ ] Home screen loads with **no** "vector store hasn't been built yet" warning banner, and the "Featured Local Ideas" board (6 cards) renders correctly.
-- [ ] Sidebar shows all 4 example question buttons in "Ask Local Jeju AI" mode.
-- [ ] Switch to "Get Experience Recommendations" mode and confirm the form (interests, style, season, transportation, area, notes) renders correctly.
+- [ ] Home screen loads inside the phone-frame layout with **no** import errors, and the 2-column "Featured Local Ideas" card grid (6 cards) renders correctly.
+- [ ] Bottom tab bar shows all three tabs (Home / AI Assistant / My Page) and switching between them works.
+- [ ] On the AI Assistant tab, confirm both the "Ask a question" and "Get recommendations" toggle states render correctly, and there's **no** "vector store hasn't been built yet" warning.
+- [ ] On My Page, confirm the avatar, Pins/Boards/Trips tabs, and saved-card grid render correctly.
 - [ ] Do one silent test question *and* one silent test recommendation beforehand to confirm the OpenAI API key is live and quota is available — an auth or quota error mid-demo is the single most disruptive failure mode.
-- [ ] Browser window sized wide enough that the sidebar is visible without collapsing (desktop width, not a narrow/mobile viewport).
+- [ ] Browser window sized to a mobile-ish width (~400-500px) or use a real mobile viewport — the phone-frame design is meant to be seen narrow, not stretched wide.
 
-## Recommended Demo Flow
+## Full Demo Flow
 
-**Total: ~4 minutes**
+**Total: ~6 minutes.** Expands the [Recommended Live Demo Sequence](#recommended-live-demo-sequence) above with exact timing and talking points.
 
-1. **(30s) Frame the problem.** Before opening the app: most travel AI just recommends the same tourist attractions everyone already knows about. Meet Local Jeju is built to surface what's *actually* local — culture, seasonal life, food, stories — and to be honest about what it does and doesn't know.
-2. **(20s) Show the home screen.** Point out the title, subtitle ("Discover Jeju Beyond Tourism"), the "Where This Is Headed" cards, and scroll to the "Featured Local Ideas" board — six Pinterest-style cards browsable before typing anything. Mention it's static, developer-authored content for now, not a live catalog.
-3. **(60s) Run one example question live.** Click a sidebar example button (don't type — it's faster and more reliable live) and narrate what's happening while it loads: "This isn't going to the model's memory — it's retrieving the most relevant chunks from a curated knowledge base first, then generating an answer grounded in only that."
-4. **(45s) Open the Sources expander.** This is the proof point of the whole demo. Show the ID, title, category, chunk ID, and file path for each source. Point out that the answer's inline citation (e.g. `("Batdam: The Black Stone Walls of Jeju", CULTURE-0001)`) matches a real, traceable document.
-5. **(45s) Run a second question** (pick one that shows a different category, e.g. the market question after a culture question) to show breadth across the knowledge base, not a single lucky answer.
-6. **(30s) Close with architecture, if the audience is technical.** One sentence per stage: Markdown + YAML knowledge documents → chunked → embedded with OpenAI → stored in ChromaDB → retrieved at query time → answered with a grounding-only prompt.
-7. **(15s) Mention scope.** Explicitly out of scope by design: reservations, payments, login, admin — this is a knowledge and recommendation layer, not a booking product.
-
-## Recommendation Mode Demo Flow
-
-**Total: ~2 minutes, run after the chat flow above (or standalone if time is short).**
-
-1. **(10s) Switch modes.** In the sidebar, select "Get Experience Recommendations." Point out that the example-question buttons are replaced by the recommendation form — same knowledge base, different interaction style.
-2. **(30s) Fill the form live.** Pick 2-3 travel interests (e.g. *culture*, *local people*, *food*), a travel style (e.g. *solo traveler*), and type a season (e.g. *October*) and preferred area (e.g. *Seogwipo*). Narrate: "This isn't a filter over a database of listings — it's converted into a natural-language query and run through the same retriever as chat mode."
-3. **(30s) Submit and narrate while it loads.** "Same grounding rules as chat mode: only recommend experiences the knowledge base actually supports, and never invent a price, schedule, address, or host name."
-4. **(30s) Walk through the structured output.** Point out the four sections in order: **Summary** → **Recommended Local Experiences** (each with why it fits + cultural connection) → **Suggested 1-Day Flow** → **Sources**. This structure is what separates it from a single free-form paragraph.
-5. **(20s) Open the Sources expander** — same id/title/category/chunk_id/file_path format as chat mode, reinforcing that recommendations are as traceable as answers.
-6. **(10s) Explicitly state scope.** "This is a recommendation feature, not a booking flow — there's no availability check, no price, no way to reserve anything here. That's intentional; see the long-term vision for where booking would eventually fit."
+1. **(20s) Frame the problem.** Before opening the app: most travel AI just recommends the same tourist attractions everyone already knows about. Meet Local Jeju is built to surface what's *actually* local — culture, seasonal life, food, stories — and to be honest about what it does and doesn't know.
+2. **(30s) Show the Home screen.** Point out the phone-frame layout (rounded card, centered, mobile-width) and the honesty badges ("Prototype only," "Booking not available in MVP") right under the header.
+3. **(40s) Browse the Pinterest-style local experience cards.** Scroll the 2-column grid — image-first gradient cards, category chip, title, description, area, "Save idea - prototype only" badge. Mention cards are loaded from a structured JSON dataset, not hardcoded, and each links back to real JEJU-KB documents.
+4. **(15s) Open AI Assistant.** Tap the AI Assistant tab in the bottom nav. Point out the honesty badges ("Grounded in JEJU-KB," "No booking or payment") and the "Ask a question" / "Get recommendations" toggle.
+5. **(45s) Ask a RAG question.** Open "Try an example," pick one (or type your own), and narrate while it loads: "This isn't going to the model's memory — it's retrieving the most relevant chunks from a curated knowledge base first, then generating an answer grounded in only that." Point out the chat bubble styling and the source chips + fallback expander underneath the answer.
+6. **(45s) Ask a second question** (a different category, e.g. the market question after a culture question) to show breadth across the knowledge base, not a single lucky answer.
+7. **(60s) Use recommendation mode.** Toggle to "Get recommendations," fill the Travel Preference Card (2-3 interests, a travel style, optionally a season and area), submit. Narrate while it loads: "Same retriever, same grounding rules as chat — just a structured recommendation instead of a free-form answer." Walk through the output: Summary → Recommended Local Experiences → Suggested 1-Day Flow → Sources.
+8. **(30s) Show My Page mock saved ideas.** Tap My Page. Point out the avatar, the Pins/Boards/Trips tabs, and that Pins reuses the same experience dataset as "saved" ideas. State plainly: "No login, no real saving — this previews where a future account-based experience would live."
+9. **(25s) Explain the future Trip Planner / marketplace direction, honestly.** "This is Phase 1 of a longer roadmap — personalized recommendations, a trip planner, host profiles, and eventually an Airbnb-like marketplace are the direction, but none of that is built. This MVP is deliberately the knowledge and recommendation layer first."
 
 ## The 4 Verified Demo Questions
 
@@ -143,6 +136,10 @@ If asked about coverage honestly: "Right now six of the ten categories are popul
 
 Useful follow-up if asked why: chat and forms both require the traveler to already know what to ask for. A browsable board of local ideas — even a small, static one — gives them something to react to first. The "Save idea - prototype only" badge on each card is intentionally honest: it looks like a real product affordance because that's the direction this is headed, but nothing is actually saved in this MVP.
 
+> "The Pinterest-style cards are now backed by structured JSON data, which allows the prototype to evolve from static UI into a real product data layer."
+
+If asked to go one level deeper: each card is a JSON file in `data/experiences/`, loaded and validated by `utils/experience_loader.py`, and linked back to real JEJU-KB documents via a `related_kb_ids` field — the same "separate data from rendering" pattern used for the knowledge base itself, just applied one layer up, toward a future Explore Page or Trip Planner.
+
 ## What to Say About the Long-Term Vision
 
 If asked "is this going to be like Airbnb?" or "where is this headed?" — answer honestly, in this order: what exists today, then the direction, without implying anything beyond Phase 1 is built.
@@ -179,9 +176,10 @@ Be upfront if asked — this builds more credibility than dodging:
 
 Placeholders only — no screenshots have been captured yet. Save captured images to `assets/screenshots/` when ready:
 
-- **Home screen** — title, subtitle, description, and sidebar with example questions visible.
-- **Answer with inline citation** — a rendered answer showing an inline source citation (e.g. `("Batdam: The Black Stone Walls of Jeju", CULTURE-0001)`).
-- **Sources expander** — the expanded "Sources (N)" panel showing id, title, category, chunk_id, and file_path for a result.
-- **Sidebar example questions** — the sidebar panel with all 4 example question buttons visible.
-- **Recommendation form** — the "Get Experience Recommendations" mode with the preference form visible (interests, style, season, transportation, area, notes).
+- **Home screen** — the phone-frame layout with the 2-column Pinterest-style card grid visible.
+- **AI Assistant — chat with source chips** — a rendered answer showing the chat bubble, inline citation, and source chips underneath.
+- **Full source detail expander** — the expanded fallback expander showing id, title, category, chunk_id, and file_path for a result.
+- **Bottom tab navigation** — the Home / AI Assistant / My Page tab bar visible at the bottom of the phone frame.
+- **Recommendation form** — the "Get recommendations" toggle state with the Travel Preference Card form visible (interests, style, season, transportation, area, notes).
 - **Structured recommendation output** — a rendered recommendation showing the Summary / Recommended Local Experiences / Suggested 1-Day Flow / Sources structure.
+- **My Page mock saved ideas** — the avatar, Pins/Boards/Trips tabs, and saved-card grid.

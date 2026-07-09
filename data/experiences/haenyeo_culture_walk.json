@@ -1,0 +1,17 @@
+{
+  "id": "EXP-CARD-0001",
+  "title": "Haenyeo Culture Walk",
+  "category": "Culture / Ocean",
+  "area": "Sehwa-ri / Hado-ri, Jeju-si",
+  "season": "Year-round, weather permitting",
+  "duration": "Prototype estimate only",
+  "emoji": "🌊",
+  "best_for": ["culture lovers", "solo travelers", "heritage seekers"],
+  "transportation": ["public transportation", "taxi", "walking"],
+  "description": "Walk the coast where Jeju's women divers still work, then visit a community museum that puts the tradition in context.",
+  "local_story": "Haenyeo culture is a UNESCO-recognized living tradition of free-diving women divers who built a distinct, matrifocal community structure in Jeju's coastal villages.",
+  "related_kb_ids": ["EXP-0002", "STORY-0001"],
+  "status": "prototype_only",
+  "booking_status": "booking_not_available_in_mvp",
+  "source_note": "This is MVP experience-card data connected to JEJU-KB. It is not a real commercial product listing."
+}
