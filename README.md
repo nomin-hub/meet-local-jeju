@@ -2,7 +2,38 @@
 
 **Discover Jeju Beyond Tourism**
 
-An AI travel assistant that helps international travelers experience authentic local life on Jeju Island, Korea — powered by a Retrieval-Augmented Generation (RAG) pipeline grounded in a curated, structured knowledge base rather than general model memory.
+A RAG-powered local experience recommendation MVP for Jeju Island, designed to help international travelers discover local stories, food, culture, seasonal living, and authentic island experiences — grounded in a curated, structured knowledge base rather than general model memory.
+
+## Who This Is For
+
+- **International travelers** visiting Jeju who want more than a checklist of attractions.
+- **Local experience seekers** looking for authentic culture, food, and seasonal life.
+- **People who want to discover Jeju beyond tourist spots** — its stories, its people, its rhythms.
+
+## Portfolio Highlights
+
+- **RAG pipeline** — Markdown knowledge base → chunking → OpenAI embeddings → ChromaDB → retrieval → grounded generation, with each stage its own independently testable module (`rag/loader.py`, `rag/splitter.py`, `rag/vectordb.py`, `rag/retriever.py`).
+- **JEJU-KB structured knowledge base** — a 10-category taxonomy with a formal front-matter schema ([KDS](knowledge/KDS.md)) and ID-based cross-linking between documents, not a flat pile of scraped text.
+- **Source attribution** — every answer and recommendation is paired with the exact document IDs, titles, categories, and file paths that grounded it.
+- **Recommendation mode** — a second, preference-driven interaction mode (`rag/recommender.py`) built on the same retrieval/generation stack as chat, not a bolted-on separate system.
+- **Product roadmap toward a trip planner / local experience marketplace** — a documented, honest 6-phase roadmap (see [Long-Term Vision](#long-term-vision)) showing this MVP is a deliberate first step, not a dead end.
+
+## Demo Flow
+
+A quick way to see both modes in action:
+
+- **Chat Mode:** Ask *"Tell me about Jeju stone walls."* — watch it retrieve JEJU-KB context before answering, with sources shown below the answer.
+- **Recommendation Mode:** Switch modes in the sidebar, select interests like *culture*, *local people*, and *food*, and submit — get a structured recommendation (Summary, Recommended Local Experiences, Suggested 1-Day Flow, Sources) grounded in the same knowledge base.
+
+Full demo scripts (1-minute and 3-minute versions, plus a step-by-step live sequence): [`docs/product/05_DEMO_SCRIPT.md`](docs/product/05_DEMO_SCRIPT.md).
+
+## Problem → Solution → Product Vision
+
+- **Problem:** Travel AI and guides default to the same popular attractions, and general-purpose chatbots answer Jeju questions from ungrounded memory — neither surfaces what's actually local or seasonal.
+- **Solution:** Meet Local Jeju retrieves from JEJU-KB, a curated, source-attributed knowledge base, before generating any answer or recommendation, so every response is traceable, not guessed.
+- **Product Vision:** This MVP is Phase 1 of a longer roadmap toward a personalized trip planner and local experience marketplace — still a prototype today, with no booking, payment, or host onboarding.
+
+Full detail: [Problem](#problem) · [Solution](#solution) · [Long-Term Vision](#long-term-vision).
 
 ---
 
@@ -65,6 +96,7 @@ A general-purpose LLM asked "what's an authentic thing to do in Jeju in October?
 
 ## Key Features
 
+- **Pinterest-style "Featured Local Ideas" board** — six browsable local experience cards (category chip, description, "Save idea - prototype only" badge) as a visual entry point before a traveler even asks a question. See [Design Direction](#design-direction).
 - **Two modes, one sidebar toggle** — conversational Q&A ("Ask Local Jeju AI") and preference-based recommendations ("Get Experience Recommendations"), both grounded in the same JEJU-KB.
 - **Conversational chat UI** (Streamlit) with persistent session history.
 - **Retrieval-grounded answers** — every response is generated from retrieved JEJU-KB chunks, never from unaided model memory.
@@ -88,6 +120,18 @@ Alongside chat, the sidebar has a **"Get Experience Recommendations"** mode — 
 2. **Recommended Local Experiences** — up to 3, each with why it fits, what local story/culture it connects to, and a practical note *only if JEJU-KB actually supports one*.
 3. **Suggested 1-Day Flow** — a simple sequencing of the recommended experiences, only if the context supports combining them.
 4. **Sources** — same structured source list (id, title, category, chunk ID, file path) shown in chat mode.
+
+## Design Direction
+
+The UI direction is **Pinterest-inspired local discovery**, layered on top of the same two functional modes above — not a redesign of what the app does, but of how it invites a traveler in before they've typed anything.
+
+Concretely, that means:
+
+- **Pinterest-style discovery board** — the "Featured Local Ideas" section on the home screen: six browsable cards, no search box required, meant for skimming before committing to a question or a form.
+- **Airbnb-style experience cards** — each idea card carries a category chip, a short description, and a "Save idea - prototype only" badge, echoing the visual grammar of an experience listing without implementing any of the backend behind one.
+- **AI travel concierge** — chat mode and recommendation mode remain the functional core; the discovery board is a warmer front door to them, not a replacement.
+
+**This is still a Streamlit portfolio MVP, not a production mobile app.** The card grid, chips, and "save" badges are static, developer-authored content styled with custom CSS inside Streamlit — there is no image pipeline, no persistence layer behind "Save idea," and no native app. See [What This MVP Does Not Do Yet](#current-limitations) for the full list of what's intentionally not implemented.
 
 ## Demo Questions
 
@@ -153,7 +197,9 @@ meet-local-jeju/
 │       ├── 02_ARCHITECTURE.md      # System architecture
 │       └── 05_DEMO_SCRIPT.md       # Live demo walkthrough
 │
-├── utils/                      # Placeholder — config.py / helpers.py not yet implemented
+├── utils/
+│   ├── ui_helpers.py              # Streamlit rendering helpers — cards, hero, sources (no RAG logic)
+│   └── config.py, helpers.py     # Placeholders — not yet implemented
 ├── pages/                      # Additional Streamlit pages (none yet)
 │
 ├── requirements.txt
@@ -273,6 +319,8 @@ Step 3 embeds every JEJU-KB document and persists them to `vector_db/chroma/`. T
 - **English only.** No multi-language ingestion or querying yet.
 - **Single-turn retrieval.** Each question is answered independently; prior conversation turns are displayed in the UI but are not yet used as retrieval context for follow-up questions.
 - **Recommendation mode is a recommendation, not a plan or a marketplace.** It suggests at most 3 experiences and a possible 1-day sequencing — it does not build multi-day itineraries, does not know real-time availability, and has no host, booking, or payment layer behind it (see [Long-Term Vision](#long-term-vision) for where that would fit later).
+- **The "Featured Local Ideas" board is static, developer-authored content.** The six cards are hard-coded, not generated per-user, and "Save idea - prototype only" is a non-interactive label — nothing is actually saved anywhere.
+- **`utils/ui_helpers.py` uses custom CSS (`unsafe_allow_html=True`) for card styling.** All content rendered through it is static and developer-authored — no user input is ever passed into the HTML, so this is a styling choice, not a user-generated-content risk.
 - **Full rebuild only.** `build_vector_store()` always rebuilds the entire collection from scratch — there's no incremental/partial re-ingestion yet.
 - **Some source content is illustrative.** A few narrative "story" documents are composite accounts written to demonstrate the format, explicitly flagged as such in their own `Source Notes` sections, pending real attributed sourcing.
 - **`rag/embeddings.py`, `utils/config.py`, and `utils/helpers.py` are still placeholders.** Embedding configuration currently lives directly in `rag/vectordb.py` rather than a shared config module.

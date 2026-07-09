@@ -5,11 +5,16 @@ Two modes, both grounded in JEJU-KB:
   - "Get Experience Recommendations": preference-based recommendations
     (see `rag/recommender.py`).
 
+The visual direction is a Pinterest-style local discovery board (browse
+"Featured Local Ideas") layered on top of the same two functional modes —
+still a Streamlit portfolio MVP, not a production mobile app.
+
 This module only renders the UI and calls into `rag/`; it never builds or
 rebuilds the vector store — that is a separate offline step
-(`python3 rag/vectordb.py`). Recommendation mode is a recommendation feature
-only — it does not implement or imply booking, payment, host onboarding, or
-marketplace functionality.
+(`python3 rag/vectordb.py`). This is a portfolio MVP: recommendation mode and
+the "Featured Local Ideas" board are prototype/discovery features only — they
+do not implement or imply booking, payment, host onboarding, real-time
+availability, or marketplace functionality.
 """
 
 from pathlib import Path
@@ -19,6 +24,14 @@ from dotenv import load_dotenv
 
 from rag.chain import answer_question
 from rag.recommender import TravelerPreferences, get_experience_recommendations
+from utils.ui_helpers import (
+    inject_custom_css,
+    render_featured_ideas,
+    render_hero,
+    render_product_direction,
+    render_sources,
+    render_what_this_mvp_does,
+)
 
 load_dotenv()
 
@@ -33,6 +46,10 @@ EXAMPLE_QUESTIONS = [
 
 MODE_CHAT = "Ask Local Jeju AI"
 MODE_RECOMMEND = "Get Experience Recommendations"
+MODE_CAPTIONS = [
+    "Ask a free-form question about Jeju local life.",
+    "Answer a short preference form for tailored suggestions.",
+]
 
 INTEREST_OPTIONS = [
     "food",
@@ -54,22 +71,21 @@ TRAVEL_STYLE_OPTIONS = [
 ]
 TRANSPORTATION_OPTIONS = ["No preference", "car", "no car", "public transportation", "taxi", "walking"]
 
-st.set_page_config(page_title="Meet Local Jeju", page_icon="🍊", layout="centered")
+WHAT_IT_DOES = [
+    "Ask questions about Jeju local life",
+    "Get personalized local experience recommendations",
+    "Explore experiences grounded in JEJU-KB sources",
+    "Prototype foundation for a future trip-planning and local experience platform",
+]
+WHAT_IT_DOES_NOT_DO = [
+    "No booking",
+    "No payment",
+    "No real host onboarding",
+    "No real-time availability",
+    "No commercial travel product sales",
+]
 
-
-def render_sources(sources: list[dict]) -> None:
-    """Render a list of source dicts (id, title, category, chunk_id, file_path)."""
-    if not sources:
-        return
-    with st.expander(f"Sources ({len(sources)})"):
-        for source in sources:
-            st.markdown(
-                f"**{source.get('title')}** · `{source.get('id')}`\n\n"
-                f"- Category: `{source.get('category')}`\n"
-                f"- Chunk: `{source.get('chunk_id')}`\n"
-                f"- File: `{source.get('file_path')}`"
-            )
-            st.divider()
+st.set_page_config(page_title="Meet Local Jeju", page_icon="🍊", layout="wide")
 
 
 def render_backend_error(exc: Exception, generic_context: str = "while answering") -> str:
@@ -100,22 +116,31 @@ def render_backend_error(exc: Exception, generic_context: str = "while answering
     return f"**Something went wrong {generic_context}:** {exc}"
 
 
-# --- Sidebar: mode selector ---
+inject_custom_css()
+
+# --- Sidebar ---
 with st.sidebar:
-    st.header("Mode")
-    mode = st.radio("Choose a mode", [MODE_CHAT, MODE_RECOMMEND], key="mode")
+    st.header("Meet Local Jeju")
+    st.caption("Find local Jeju experiences, ask grounded AI questions, and build future trip ideas.")
+    st.divider()
+
+    mode = st.radio("Choose a mode", [MODE_CHAT, MODE_RECOMMEND], captions=MODE_CAPTIONS, key="mode")
     st.divider()
 
     if mode == MODE_CHAT:
+        st.caption(
+            "You're in **Ask Local Jeju AI** mode — type your own question below, "
+            "or click an example to get started."
+        )
         st.header("Try an example")
         for question in EXAMPLE_QUESTIONS:
             if st.button(question, use_container_width=True, key=f"example::{question}"):
                 st.session_state["pending_question"] = question
     else:
         st.caption(
-            "Fill out the form to get authentic local experience recommendations "
-            "grounded in JEJU-KB — this is a recommendation feature, not a "
-            "booking system."
+            "You're in **Get Experience Recommendations** mode — answer a few "
+            "quick questions and get grounded local experience ideas. This is "
+            "a prototype recommendation feature, not a booking system."
         )
 
     st.divider()
@@ -125,16 +150,18 @@ with st.sidebar:
         "general AI knowledge."
     )
 
-# --- Header ---
-st.title("Meet Local Jeju")
-st.subheader("Discover Jeju Beyond Tourism")
-st.write(
-    "Meet Local Jeju is an AI assistant for travelers who want more than a "
-    "checklist of attractions. Ask about Jeju's local culture, seasonal life, "
-    "food, festivals, and stories — or get preference-based experience "
-    "recommendations — grounded in a curated knowledge base of authentic "
-    "local experiences."
-)
+# --- Hero ---
+render_hero()
+
+col1, col2 = st.columns([3, 2], gap="large")
+with col1:
+    render_product_direction()
+with col2:
+    render_what_this_mvp_does(WHAT_IT_DOES, WHAT_IT_DOES_NOT_DO)
+
+st.divider()
+render_featured_ideas()
+st.divider()
 
 if not VECTOR_STORE_DIR.exists():
     st.warning(
@@ -144,6 +171,8 @@ if not VECTOR_STORE_DIR.exists():
     )
 
 if mode == MODE_CHAT:
+    st.caption("Answers are grounded in JEJU-KB, the project's structured local knowledge base.")
+
     # --- Chat history ---
     if "messages" not in st.session_state:
         st.session_state["messages"] = []
@@ -187,24 +216,28 @@ if mode == MODE_CHAT:
             )
 
 else:  # mode == MODE_RECOMMEND
-    st.markdown("### Get Experience Recommendations")
+    st.markdown("### Your Travel Preference Card")
     st.caption(
-        "This is a recommendation feature only — not a booking or marketplace "
-        "feature. Nothing shown here can be reserved or paid for."
+        "Share your interests and travel style, and we'll recommend authentic "
+        "local experiences grounded in JEJU-KB — generated from structured "
+        "local knowledge, not a generic travel search."
     )
+    st.info("💡 This is a prototype recommendation feature, not a booking system.")
 
     if "last_recommendation" not in st.session_state:
         st.session_state["last_recommendation"] = None
 
     with st.form("recommendation_form"):
-        interests = st.multiselect("Travel interests", INTEREST_OPTIONS)
-        travel_style = st.multiselect("Travel style", TRAVEL_STYLE_OPTIONS)
-        season_or_month = st.text_input("Season or month (optional)", placeholder="e.g. October, winter")
-        transportation = st.selectbox("Transportation", TRANSPORTATION_OPTIONS)
-        preferred_area = st.text_input("Preferred area (optional)", placeholder="e.g. Seogwipo, Jeju-si")
-        additional_notes = st.text_area("Question or additional preference (optional)")
+        interests = st.multiselect("What are you interested in?", INTEREST_OPTIONS)
+        travel_style = st.multiselect("What is your travel style?", TRAVEL_STYLE_OPTIONS)
+        season_or_month = st.text_input("When are you visiting? (optional)", placeholder="e.g. October, winter")
+        transportation = st.selectbox("How will you move around Jeju?", TRANSPORTATION_OPTIONS)
+        preferred_area = st.text_input(
+            "Any specific area of Jeju in mind? (optional)", placeholder="e.g. Seogwipo, Jeju-si"
+        )
+        additional_notes = st.text_area("Any extra preferences? (optional)")
 
-        submitted = st.form_submit_button("Get Recommendations")
+        submitted = st.form_submit_button("Get My Recommendations")
 
     if submitted:
         preferences = TravelerPreferences(
@@ -235,5 +268,9 @@ else:  # mode == MODE_RECOMMEND
 
     if st.session_state["last_recommendation"] is not None:
         st.divider()
+        st.caption(
+            "✨ Generated from structured local knowledge in JEJU-KB — not a "
+            "generic travel search."
+        )
         st.markdown(st.session_state["last_recommendation"]["text"])
         render_sources(st.session_state["last_recommendation"]["sources"])

@@ -2,7 +2,7 @@
 
 **Document Owner:** Product & Engineering
 **Status:** Draft v1.0
-**Length:** 3–5 minute live walkthrough
+**Length:** 1-minute, 3-minute, and full (~6-minute, both modes in depth) versions
 **Related:** [`README.md`](../../README.md), [`01_PRD.md`](../01_PRD.md), [`01_PRODUCT_BRIEF.md`](01_PRODUCT_BRIEF.md), [`02_ARCHITECTURE.md`](02_ARCHITECTURE.md)
 
 ---
@@ -19,6 +19,40 @@ Show that Meet Local Jeju answers travel questions about Jeju Island **grounded 
 
 Calibrate depth accordingly: lead with the product experience, then go as deep into architecture as the audience wants.
 
+## 1-Minute Demo Script
+
+Use when time is extremely tight — a recruiter screen-share, or the last minute of a longer conversation.
+
+1. **(10s)** "Meet Local Jeju is a RAG-powered MVP that helps travelers discover authentic Jeju experiences — grounded in a curated knowledge base, not generic AI chatter."
+2. **(25s)** Click a sidebar example question in Chat Mode (e.g. *"Tell me about Jeju stone walls."*) and narrate while it loads: "It retrieves from a structured knowledge base first, then answers only from what it found."
+3. **(15s)** Open the Sources expander: "Every answer is traceable back to a specific document — that's the point."
+4. **(10s)** "It's an MVP — no booking, no payments, no real hosts yet. The current focus is proving the knowledge and recommendation layer works before building any of that."
+
+## 3-Minute Demo Script
+
+Use for a standard portfolio walkthrough covering both modes.
+
+1. **(20s) Frame it.** "Most travel AI recommends the same popular spots. Meet Local Jeju is built to surface what's actually local, grounded in a curated knowledge base called JEJU-KB."
+2. **(30s) Chat Mode.** Click a sidebar example question. While it loads: "This isn't the model's memory — it retrieved relevant JEJU-KB chunks first, then answered only from that context."
+3. **(30s) Sources.** Open the Sources expander: id, title, category, chunk ID, file path. "That's what makes 'authentic' a checkable claim, not a marketing word."
+4. **(40s) Recommendation Mode.** Switch modes, pick 2-3 interests (e.g. *culture*, *local people*, *food*), submit. While it loads: "Same retriever, same grounding rules — just a structured recommendation instead of a free-form answer."
+5. **(30s) Walk the output.** Point out the structure: Summary → Recommended Local Experiences → Suggested 1-Day Flow → Sources.
+6. **(30s) Scope and vision.** "This is a recommendation feature, not a booking system — no prices, no availability, no reservations. It's Phase 1 of a longer roadmap toward a trip planner and local experience marketplace, but none of that exists yet."
+
+## Recommended Live Demo Sequence
+
+The canonical step-by-step order for a live walkthrough — this is the backbone both scripts above are built from:
+
+1. Open the app.
+2. Explain the problem (generic travel AI vs. grounded local knowledge).
+3. Ask a haenyeo question in Chat Mode.
+4. Switch to Recommendation Mode.
+5. Select food / culture / local people as interests.
+6. Show the recommendation results and sources.
+7. Explain the long-term platform vision honestly (Phase 1 today; trip planner and marketplace are later, unbuilt phases).
+
+For exact timing and talking points behind each step, see [Recommended Demo Flow](#recommended-demo-flow) (chat mode, ~4 min) and [Recommendation Mode Demo Flow](#recommendation-mode-demo-flow) (~2 min) below — together they form the full ~6-minute version of this sequence.
+
 ## App Setup Checklist
 
 Run through this **before** presenting, not during:
@@ -26,7 +60,7 @@ Run through this **before** presenting, not during:
 - [ ] `.env` exists locally with a valid `OPENAI_API_KEY` (never shown on screen).
 - [ ] Vector store is built: `vector_db/chroma/` exists and is current — run `python3 rag/vectordb.py` if `knowledge/` has changed since the last build.
 - [ ] `streamlit run app.py` starts cleanly with no errors in the terminal.
-- [ ] Home screen loads with **no** "vector store hasn't been built yet" warning banner.
+- [ ] Home screen loads with **no** "vector store hasn't been built yet" warning banner, and the "Featured Local Ideas" board (6 cards) renders correctly.
 - [ ] Sidebar shows all 4 example question buttons in "Ask Local Jeju AI" mode.
 - [ ] Switch to "Get Experience Recommendations" mode and confirm the form (interests, style, season, transportation, area, notes) renders correctly.
 - [ ] Do one silent test question *and* one silent test recommendation beforehand to confirm the OpenAI API key is live and quota is available — an auth or quota error mid-demo is the single most disruptive failure mode.
@@ -37,7 +71,7 @@ Run through this **before** presenting, not during:
 **Total: ~4 minutes**
 
 1. **(30s) Frame the problem.** Before opening the app: most travel AI just recommends the same tourist attractions everyone already knows about. Meet Local Jeju is built to surface what's *actually* local — culture, seasonal life, food, stories — and to be honest about what it does and doesn't know.
-2. **(15s) Show the home screen.** Point out the title, subtitle ("Discover Jeju Beyond Tourism"), the short product description, and the sidebar of example questions.
+2. **(20s) Show the home screen.** Point out the title, subtitle ("Discover Jeju Beyond Tourism"), the "Where This Is Headed" cards, and scroll to the "Featured Local Ideas" board — six Pinterest-style cards browsable before typing anything. Mention it's static, developer-authored content for now, not a live catalog.
 3. **(60s) Run one example question live.** Click a sidebar example button (don't type — it's faster and more reliable live) and narrate what's happening while it loads: "This isn't going to the model's memory — it's retrieving the most relevant chunks from a curated knowledge base first, then generating an answer grounded in only that."
 4. **(45s) Open the Sources expander.** This is the proof point of the whole demo. Show the ID, title, category, chunk ID, and file path for each source. Point out that the answer's inline citation (e.g. `("Batdam: The Black Stone Walls of Jeju", CULTURE-0001)`) matches a real, traceable document.
 5. **(45s) Run a second question** (pick one that shows a different category, e.g. the market question after a culture question) to show breadth across the knowledge base, not a single lucky answer.
@@ -102,6 +136,12 @@ If asked about coverage honestly: "Right now six of the ten categories are popul
 ## What to Say When Explaining Source Attribution
 
 > "Every answer comes with its sources — not just a vague 'according to my training data,' but the actual document ID, title, category, and file path that grounded the answer. That's what makes 'authentic' a checkable claim instead of a marketing word — you can go open the exact Markdown file the answer came from."
+
+## What to Say About the Visual Design
+
+> "The visual direction is inspired by Pinterest-style discovery, because travelers often want to browse and save local ideas before planning a trip."
+
+Useful follow-up if asked why: chat and forms both require the traveler to already know what to ask for. A browsable board of local ideas — even a small, static one — gives them something to react to first. The "Save idea - prototype only" badge on each card is intentionally honest: it looks like a real product affordance because that's the direction this is headed, but nothing is actually saved in this MVP.
 
 ## What to Say About the Long-Term Vision
 
