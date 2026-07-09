@@ -31,6 +31,29 @@ Meet Local Jeju is a conversational assistant that answers **only** from a curat
 
 If JEJU-KB doesn't have relevant information for a question, the assistant says so — it does not fill the gap with invented specifics.
 
+## Long-Term Vision
+
+Meet Local Jeju starts as a RAG-powered local knowledge assistant — that's the entire product today. But the long-term goal is bigger: to become a **trusted local experience and trip-planning platform** that connects international travelers with authentic Jeju local life, not just answers about it.
+
+This MVP is **Phase 1** of a longer product roadmap:
+
+| Phase | Direction | Status |
+|---|---|---|
+| 1 | RAG-powered local knowledge assistant | ✅ **Current MVP (this repo)** |
+| 2 | Personalized experience recommendation mode | 🔜 Planned |
+| 3 | Multi-day trip planner | 🔭 Future |
+| 4 | Local host and experience dataset | 🔭 Future |
+| 5 | Marketplace prototype with mock booking flow | 🔭 Future |
+| 6 | Real platform — host onboarding, booking, reviews, payments, partnerships | 🔭 Long-term vision |
+
+The future platform direction (Phases 2–6) includes a personalized trip planner, a local experience marketplace, host profiles for farmers, haenyeo culture guides, market guides, artisans, and local storytellers, stay + experience packages, and — long term — Airbnb-like booking and reviews. **None of that exists yet.** No host onboarding, booking flow, payments, user accounts, or reviews are implemented in this codebase.
+
+> This MVP focuses on the knowledge and recommendation layer first. Before building booking, payment, or host-management features, the project validates whether AI can understand traveler intent and match it with structured local knowledge.
+
+Meet Local Jeju is not trying to recommend famous tourist spots — that's what separates it from generic travel guide apps (popularity-ranked, not authenticity-ranked), generic AI chatbots (ungrounded, unattributed answers from memory), Airbnb (booking infrastructure first, discovery second), and traditional tour platforms (fixed, commission-driven packages). It's designed to help travelers discover local stories, seasonal living, people, food, culture, and authentic island experiences — with the marketplace layer only introduced later, once that foundation is proven.
+
+Full detail on the platform direction, phase-by-phase scope, and an explicit "what exists vs. what doesn't" table: [`docs/product/01_PRODUCT_BRIEF.md`](docs/product/01_PRODUCT_BRIEF.md).
+
 ## Why RAG?
 
 A general-purpose LLM asked "what's an authentic thing to do in Jeju in October?" will answer from broad training data — plausible-sounding, but not grounded in anything specific, current, or verifiable. Retrieval-Augmented Generation solves this differently:
@@ -216,9 +239,11 @@ Step 3 embeds every JEJU-KB document and persists them to `vector_db/chroma/`. T
 - **Full rebuild only.** `build_vector_store()` always rebuilds the entire collection from scratch — there's no incremental/partial re-ingestion yet.
 - **Some source content is illustrative.** A few narrative "story" documents are composite accounts written to demonstrate the format, explicitly flagged as such in their own `Source Notes` sections, pending real attributed sourcing.
 - **`rag/embeddings.py`, `utils/config.py`, and `utils/helpers.py` are still placeholders.** Embedding configuration currently lives directly in `rag/vectordb.py` rather than a shared config module.
-- **No reservation, payment, login, or admin features** — intentionally out of scope for this project (see [Future Roadmap](#future-roadmap)).
+- **No reservation, payment, login, host onboarding, or admin features.** Intentionally out of scope for Phase 1 — these belong to later phases of the platform vision (see [Long-Term Vision](#long-term-vision) and [`docs/product/01_PRODUCT_BRIEF.md`](docs/product/01_PRODUCT_BRIEF.md)), not this MVP.
 
 ## Future Roadmap
+
+This section covers near-term improvements *within Phase 1* (the current RAG assistant). For the larger 6-phase platform vision — trip planning, a local experience marketplace, host profiles, and eventually Airbnb-like booking — see [Long-Term Vision](#long-term-vision) above and the full [Product Brief](docs/product/01_PRODUCT_BRIEF.md).
 
 - Populate the remaining four JEJU-KB categories (`festivals`, `government`, `transportation`, `tourism`).
 - Multi-language support (Korean, Japanese, Chinese).
@@ -228,7 +253,7 @@ Step 3 embeds every JEJU-KB document and persists them to `vector_db/chroma/`. T
 - An evaluation harness to systematically track groundedness and hallucination rate over time.
 - Extending the same knowledge-base + RAG pattern to other regions beyond Jeju.
 
-See [`docs/01_PRD.md`](docs/01_PRD.md) for the full product roadmap and non-goals.
+See [`docs/01_PRD.md`](docs/01_PRD.md) for the full Phase 1 product requirements and non-goals.
 
 ## What I Learned
 

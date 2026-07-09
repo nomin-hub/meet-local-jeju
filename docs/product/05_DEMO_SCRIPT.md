@@ -3,7 +3,7 @@
 **Document Owner:** Product & Engineering
 **Status:** Draft v1.0
 **Length:** 3–5 minute live walkthrough
-**Related:** [`README.md`](../../README.md), [`01_PRD.md`](../01_PRD.md), [`02_ARCHITECTURE.md`](02_ARCHITECTURE.md)
+**Related:** [`README.md`](../../README.md), [`01_PRD.md`](../01_PRD.md), [`01_PRODUCT_BRIEF.md`](01_PRODUCT_BRIEF.md), [`02_ARCHITECTURE.md`](02_ARCHITECTURE.md)
 
 ---
 
@@ -91,6 +91,14 @@ If asked about coverage honestly: "Right now six of the ten categories are popul
 
 > "Every answer comes with its sources — not just a vague 'according to my training data,' but the actual document ID, title, category, and file path that grounded the answer. That's what makes 'authentic' a checkable claim instead of a marketing word — you can go open the exact Markdown file the answer came from."
 
+## What to Say About the Long-Term Vision
+
+If asked "is this going to be like Airbnb?" or "where is this headed?" — answer honestly, in this order: what exists today, then the direction, without implying anything beyond Phase 1 is built.
+
+> "Today this is a RAG-powered knowledge assistant — that's Phase 1. The long-term vision is a local experience and trip-planning platform: personalized recommendations, host profiles for people like farmers and haenyeo guides, and eventually an Airbnb-like booking and review system. But this MVP focuses on the knowledge and recommendation layer first — before building booking, payment, or host-management features, the project validates whether AI can understand traveler intent and match it with structured local knowledge. None of the marketplace or booking pieces exist yet."
+
+Full phase-by-phase detail: [`docs/product/01_PRODUCT_BRIEF.md`](01_PRODUCT_BRIEF.md). Avoid demoing or implying any booking, payment, host, or marketplace functionality — none of it exists in the running app.
+
 ## Known Limitations
 
 Be upfront if asked — this builds more credibility than dodging:
@@ -104,12 +112,15 @@ Be upfront if asked — this builds more credibility than dodging:
 
 ## Future Roadmap Talking Points
 
+**Phase 1 near-term (this codebase):**
 - Populate the remaining four JEJU-KB categories (festivals, government, transportation, tourism).
 - Multi-language support (Korean, Japanese, Chinese).
 - Multi-turn, context-aware follow-up questions.
 - A community/curator content pipeline with review gating, so local contributors could eventually add stories directly.
 - An evaluation harness to systematically track groundedness and hallucination rate as the knowledge base grows.
 - The underlying pattern (structured knowledge base + RAG) is designed to generalize beyond Jeju to other regions.
+
+**Beyond Phase 1 (platform vision, not built):** personalized recommendations (Phase 2) → multi-day trip planner (Phase 3) → local host/experience dataset (Phase 4) → marketplace prototype with a mock booking flow (Phase 5) → real platform with host onboarding, booking, reviews, payments, and partnerships (Phase 6). See [`01_PRODUCT_BRIEF.md`](01_PRODUCT_BRIEF.md) for the full breakdown.
 
 ## Screenshots to Capture Later
 
