@@ -27,8 +27,9 @@ Run through this **before** presenting, not during:
 - [ ] Vector store is built: `vector_db/chroma/` exists and is current — run `python3 rag/vectordb.py` if `knowledge/` has changed since the last build.
 - [ ] `streamlit run app.py` starts cleanly with no errors in the terminal.
 - [ ] Home screen loads with **no** "vector store hasn't been built yet" warning banner.
-- [ ] Sidebar shows all 4 example question buttons.
-- [ ] Do one silent test question beforehand to confirm the OpenAI API key is live and quota is available — an auth or quota error mid-demo is the single most disruptive failure mode.
+- [ ] Sidebar shows all 4 example question buttons in "Ask Local Jeju AI" mode.
+- [ ] Switch to "Get Experience Recommendations" mode and confirm the form (interests, style, season, transportation, area, notes) renders correctly.
+- [ ] Do one silent test question *and* one silent test recommendation beforehand to confirm the OpenAI API key is live and quota is available — an auth or quota error mid-demo is the single most disruptive failure mode.
 - [ ] Browser window sized wide enough that the sidebar is visible without collapsing (desktop width, not a narrow/mobile viewport).
 
 ## Recommended Demo Flow
@@ -42,6 +43,17 @@ Run through this **before** presenting, not during:
 5. **(45s) Run a second question** (pick one that shows a different category, e.g. the market question after a culture question) to show breadth across the knowledge base, not a single lucky answer.
 6. **(30s) Close with architecture, if the audience is technical.** One sentence per stage: Markdown + YAML knowledge documents → chunked → embedded with OpenAI → stored in ChromaDB → retrieved at query time → answered with a grounding-only prompt.
 7. **(15s) Mention scope.** Explicitly out of scope by design: reservations, payments, login, admin — this is a knowledge and recommendation layer, not a booking product.
+
+## Recommendation Mode Demo Flow
+
+**Total: ~2 minutes, run after the chat flow above (or standalone if time is short).**
+
+1. **(10s) Switch modes.** In the sidebar, select "Get Experience Recommendations." Point out that the example-question buttons are replaced by the recommendation form — same knowledge base, different interaction style.
+2. **(30s) Fill the form live.** Pick 2-3 travel interests (e.g. *culture*, *local people*, *food*), a travel style (e.g. *solo traveler*), and type a season (e.g. *October*) and preferred area (e.g. *Seogwipo*). Narrate: "This isn't a filter over a database of listings — it's converted into a natural-language query and run through the same retriever as chat mode."
+3. **(30s) Submit and narrate while it loads.** "Same grounding rules as chat mode: only recommend experiences the knowledge base actually supports, and never invent a price, schedule, address, or host name."
+4. **(30s) Walk through the structured output.** Point out the four sections in order: **Summary** → **Recommended Local Experiences** (each with why it fits + cultural connection) → **Suggested 1-Day Flow** → **Sources**. This structure is what separates it from a single free-form paragraph.
+5. **(20s) Open the Sources expander** — same id/title/category/chunk_id/file_path format as chat mode, reinforcing that recommendations are as traceable as answers.
+6. **(10s) Explicitly state scope.** "This is a recommendation feature, not a booking flow — there's no availability check, no price, no way to reserve anything here. That's intentional; see the long-term vision for where booking would eventually fit."
 
 ## The 4 Verified Demo Questions
 
@@ -108,7 +120,8 @@ Be upfront if asked — this builds more credibility than dodging:
 - Each question is answered independently; there's no multi-turn conversational memory feeding retrieval yet.
 - The vector store is a full rebuild each time (`python3 rag/vectordb.py`) — no incremental re-ingestion yet.
 - A few narrative "story" documents are explicitly composite/illustrative content, flagged as such in their own source notes, pending real attributed sourcing.
-- No reservation, payment, login, or admin features — intentionally out of scope for this project.
+- Recommendation mode suggests at most 3 experiences and an optional 1-day sequencing — it does not build multi-day itineraries and has no concept of real-time availability.
+- No reservation, payment, login, host onboarding, or admin features — intentionally out of scope for this project.
 
 ## Future Roadmap Talking Points
 
@@ -130,3 +143,5 @@ Placeholders only — no screenshots have been captured yet. Save captured image
 - **Answer with inline citation** — a rendered answer showing an inline source citation (e.g. `("Batdam: The Black Stone Walls of Jeju", CULTURE-0001)`).
 - **Sources expander** — the expanded "Sources (N)" panel showing id, title, category, chunk_id, and file_path for a result.
 - **Sidebar example questions** — the sidebar panel with all 4 example question buttons visible.
+- **Recommendation form** — the "Get Experience Recommendations" mode with the preference form visible (interests, style, season, transportation, area, notes).
+- **Structured recommendation output** — a rendered recommendation showing the Summary / Recommended Local Experiences / Suggested 1-Day Flow / Sources structure.

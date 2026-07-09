@@ -65,6 +65,7 @@ A general-purpose LLM asked "what's an authentic thing to do in Jeju in October?
 
 ## Key Features
 
+- **Two modes, one sidebar toggle** — conversational Q&A ("Ask Local Jeju AI") and preference-based recommendations ("Get Experience Recommendations"), both grounded in the same JEJU-KB.
 - **Conversational chat UI** (Streamlit) with persistent session history.
 - **Retrieval-grounded answers** — every response is generated from retrieved JEJU-KB chunks, never from unaided model memory.
 - **Source attribution** — each answer is paired with the exact source documents (title, category, chunk ID, file path) that grounded it.
@@ -72,6 +73,21 @@ A general-purpose LLM asked "what's an authentic thing to do in Jeju in October?
 - **Seasonal and category-aware content** — knowledge documents carry `season`, `region`, and `category` metadata for more precise retrieval.
 - **Guardrails against fabrication** — the prompt explicitly forbids inventing exact prices, schedules, addresses, phone numbers, or named individuals.
 - **Example questions in the sidebar** for instant, one-click demoing.
+
+## Experience Recommendation Mode
+
+Alongside chat, the sidebar has a **"Get Experience Recommendations"** mode — a short preference form that turns a traveler's stated interests into a structured, grounded recommendation, instead of a free-form Q&A answer.
+
+**This is a recommendation feature, not a booking or marketplace feature.** It doesn't check availability, show prices, or let anyone reserve anything — see [Long-Term Vision](#long-term-vision) for where this fits in the broader roadmap.
+
+**Form fields:** travel interests (food, culture, nature, local people, farming, ocean, markets, slow travel), travel style (relaxing, active, cultural, family-friendly, solo traveler, budget-friendly), season or month (optional), transportation (car, no car, public transportation, taxi, walking), preferred area (optional), and an optional free-text note.
+
+**How it works:** the form's answers are converted into a natural-language query (`rag/recommender.py: build_recommendation_query`), which retrieves relevant JEJU-KB chunks via the same retriever used by chat mode (`rag.retriever.retrieve_relevant_documents`), then a chat model (same model, same groundedness rules as chat mode) generates a structured recommendation:
+
+1. **Summary** — a short read on what fits this traveler.
+2. **Recommended Local Experiences** — up to 3, each with why it fits, what local story/culture it connects to, and a practical note *only if JEJU-KB actually supports one*.
+3. **Suggested 1-Day Flow** — a simple sequencing of the recommended experiences, only if the context supports combining them.
+4. **Sources** — same structured source list (id, title, category, chunk ID, file path) shown in chat mode.
 
 ## Demo Questions
 
@@ -102,7 +118,7 @@ This diagram shows the query-time path a question takes through the system. `JEJ
 
 ```
 meet-local-jeju/
-├── app.py                     # Streamlit chat UI (interface layer)
+├── app.py                     # Streamlit UI — chat mode + recommendation mode
 │
 ├── knowledge/                  # JEJU-KB — the AI knowledge base (RAG source of truth)
 │   ├── KDS.md                    # Knowledge Document Standard
@@ -123,7 +139,8 @@ meet-local-jeju/
 │   ├── splitter.py               # Chunks documents (chunk_size=800, overlap=120)
 │   ├── vectordb.py               # OpenAI embeddings + ChromaDB build/load
 │   ├── retriever.py              # Query-time similarity search
-│   ├── chain.py                  # Grounded-answer prompt + generation
+│   ├── chain.py                  # Grounded-answer prompt + generation (chat mode)
+│   ├── recommender.py            # Preference-based grounded recommendations (recommendation mode)
 │   └── embeddings.py             # Placeholder — not yet implemented (see Limitations)
 │
 ├── data/                       # Working storage for the ingestion pipeline (raw/processed/embeddings)
@@ -131,7 +148,10 @@ meet-local-jeju/
 │
 ├── docs/                       # Product documentation
 │   ├── 01_PRD.md                 # Product Requirement Document
-│   └── product/02_ARCHITECTURE.md  # System architecture
+│   └── product/
+│       ├── 01_PRODUCT_BRIEF.md     # Long-term platform vision
+│       ├── 02_ARCHITECTURE.md      # System architecture
+│       └── 05_DEMO_SCRIPT.md       # Live demo walkthrough
 │
 ├── utils/                      # Placeholder — config.py / helpers.py not yet implemented
 ├── pages/                      # Additional Streamlit pages (none yet)
@@ -231,11 +251,28 @@ Step 3 embeds every JEJU-KB document and persists them to `vector_db/chroma/`. T
 | CULTURE-0001 | Batdam: The Black Stone Walls of Jeju | culture | CULTURE-0001::chunk-2 | `knowledge/culture/CULTURE-0001-jeju-stone-walls.md` |
 | CULTURE-0001 | Batdam: The Black Stone Walls of Jeju | culture | CULTURE-0001::chunk-3 | `knowledge/culture/CULTURE-0001-jeju-stone-walls.md` |
 
+**Recommendation mode example** — interests: *culture, local people, food*; style: *solo traveler, cultural*; season: *October*; area: *Seogwipo*:
+
+> **Summary**
+> For a solo traveler interested in culture, local people, and food in Seogwipo during October, there are several authentic experiences that allow for interaction with the local community and exploration of Jeju's agricultural and culinary traditions.
+>
+> **Recommended Local Experiences**
+> - **Guided Visit to a Jeju Five-Day Market** — aligns with meeting local people and exploring local cuisine through vendor interaction and sampling traditional foods.
+> - **Haenyeo Culture Walk: Coastal Path and Community Museum** — an intimate look at haenyeo (women divers) culture and their connection to the sea.
+> - **October in the Orchards: The Start of Jeju's Tangerine Season** — orchard walks and autumn colors around Seogwipo, with the chance to engage with local farmers.
+>
+> **Suggested 1-Day Flow**
+> Market visit in the morning → Haenyeo Culture Walk along the coast → an afternoon stroll through the orchards.
+>
+> **Sources**
+> Guided Visit to a Jeju Five-Day Market (EXP-0003) · Haenyeo Culture Walk (EXP-0002) · October in the Orchards (SEASON-0001)
+
 ## Current Limitations
 
 - **Knowledge coverage is partial.** 10 documents across 6 of 10 categories — `festivals`, `government`, `transportation`, and `tourism` have folder scaffolding but no content yet.
 - **English only.** No multi-language ingestion or querying yet.
 - **Single-turn retrieval.** Each question is answered independently; prior conversation turns are displayed in the UI but are not yet used as retrieval context for follow-up questions.
+- **Recommendation mode is a recommendation, not a plan or a marketplace.** It suggests at most 3 experiences and a possible 1-day sequencing — it does not build multi-day itineraries, does not know real-time availability, and has no host, booking, or payment layer behind it (see [Long-Term Vision](#long-term-vision) for where that would fit later).
 - **Full rebuild only.** `build_vector_store()` always rebuilds the entire collection from scratch — there's no incremental/partial re-ingestion yet.
 - **Some source content is illustrative.** A few narrative "story" documents are composite accounts written to demonstrate the format, explicitly flagged as such in their own `Source Notes` sections, pending real attributed sourcing.
 - **`rag/embeddings.py`, `utils/config.py`, and `utils/helpers.py` are still placeholders.** Embedding configuration currently lives directly in `rag/vectordb.py` rather than a shared config module.
